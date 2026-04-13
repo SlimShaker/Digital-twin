@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  broker:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+
+  edge:
+    build: ./edge
+    depends_on:
+      - broker
+    restart: always
+  fog:
+    build: ./fog
+    depends_on:
+      - broker
+    restart: always
