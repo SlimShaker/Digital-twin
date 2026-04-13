@@ -1,7 +1,7 @@
-#include "fog.cpp"
+#include "fog.hpp"
 
 int main() {
-    fogNode fog;
-    fog.start();
+    fogNode node;
+    node.start();
     return 0;
 }

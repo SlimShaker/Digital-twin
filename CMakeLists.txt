@@ -12,4 +12,5 @@ add_executable(project
         common/digital_human.hpp
         edge/main.cpp
         fog/main.cpp
+        fog/fogCallBack.cpp
 )
