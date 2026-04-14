@@ -13,6 +13,8 @@ services:
       - broker
     restart: always
   fog:
+    volumes:
+      - ./data:/app/data
     build:
       context: .
       dockerfile: fog/Dockerfile

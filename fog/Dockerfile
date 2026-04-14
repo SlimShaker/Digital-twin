@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
     libpaho-mqtt-dev \
-    libpaho-mqttpp-dev
+    libpaho-mqttpp-dev \
+    nlohmann-json3-dev
 
 COPY . .
 

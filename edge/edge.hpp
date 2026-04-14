@@ -3,7 +3,6 @@
 #include <mqtt/async_client.h>
 
 class edgeNode {
-    private:
     mqtt::async_client client;
     std::string topic;
     public:

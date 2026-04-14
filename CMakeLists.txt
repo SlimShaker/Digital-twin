@@ -13,4 +13,6 @@ add_executable(project
         edge/main.cpp
         fog/main.cpp
         fog/fogCallBack.cpp
+        logger/reporter.cpp
+        logger/reporter.h
 )
