@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
-RUN g++ edge/main.cpp edge/edge.cpp common/digital_human.cpp \
+RUN g++ edge/main.cpp edge/edge.cpp common/digital_human.cpp logger/reporter.cpp \
     -Icommon \
     -o edge_prog \
     -lpaho-mqttpp3 -lpaho-mqtt3as

@@ -1,24 +1,21 @@
 // Created by Hussein on 2026-04-12.
 #include "edge.hpp"
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
 int nsample = 0;
 
 edgeNode::edgeNode(const std::string& address, const std::string& id, const std::string& topic) : client(address, id), topic(topic) {}
 
 void edgeNode::start() {
     client.connect()->wait();
-
+    reporter rep;
     while (true) {
         float value = rand() % 100;
-
-        json j;
+        auto now = std::chrono::system_clock::now();
+        auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+        long timeSentRaw = ms.time_since_epoch().count();
+        nlohmann::json j;
         j["id"] = ++nsample;
-        j["time"] = "2026-04-14T12:00:00";
+        j["timeSentRaw"] = timeSentRaw;
+        j["timeSent"] = rep.currentTime();;
         j["weight"] = value;
 
         std::string payload = j.dump();

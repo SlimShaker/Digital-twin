@@ -14,5 +14,5 @@ add_executable(project
         fog/main.cpp
         fog/fogCallBack.cpp
         logger/reporter.cpp
-        logger/reporter.h
+        logger/reporter.hpp
 )

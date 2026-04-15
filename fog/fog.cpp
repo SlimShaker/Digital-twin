@@ -1,10 +1,6 @@
 // Created by Hussein on 2026-04-12.
 #include "fog.hpp"
-#include "fogCallBack.hpp"
-#include "../common/digital_human.hpp"
-#include <iostream>
-#include <thread>
-#include <mqtt/async_client.h>
+
 
 void fogNode::start() {
     std::cout<<"Fog node running..."<<std::endl;
