@@ -2,7 +2,7 @@
 #include "reporter.hpp"
 
 void reporter::report(int id, long timeSentRaw, long timeReceivedRaw, const std::string& timeSent, const std::string& timeReceived, float weight) {
-    std::ofstream file("data/received_data.csv", std::ios::app);
+    std::ofstream file("data/received_data.json", std::ios::app);
     long delay = timeReceivedRaw - timeSentRaw;
     file << id << "," << timeSentRaw << "," << timeReceivedRaw<< "," << delay << "," << "," << timeSent << "," << timeReceived << "," << weight << "\n";
 }
