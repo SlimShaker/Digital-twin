@@ -1,21 +1,20 @@
 // Created by Hussein on 2026-04-12.
 #include "edge.hpp"
-int nsample = 0;
 
 edgeNode::edgeNode(const std::string& address, const std::string& id, const std::string& topic) : client(address, id), topic(topic) {}
 
+
 void edgeNode::start() {
+    int nsample = 0;
     client.connect()->wait();
     reporter rep;
     while (true) {
         float value = rand() % 100;
-        auto now = std::chrono::system_clock::now();
-        auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-        long timeSentRaw = ms.time_since_epoch().count();
+        long timeSentRaw = rep.getEpochMs();
         nlohmann::json j;
         j["id"] = ++nsample;
         j["timeSentRaw"] = timeSentRaw;
-        j["timeSent"] = rep.currentTime();;
+        j["timeSent"] = rep.getTimestampWithMs();;
         j["weight"] = value;
 
         std::string payload = j.dump();

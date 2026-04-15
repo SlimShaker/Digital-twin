@@ -10,5 +10,6 @@
 class reporter {
 public:
     void report(int id, long timeSentRaw, long timeReceivedRaw, const std::string& timeSent, const std::string& timeReceived, float weight);
-    std::string currentTime();
+    std::string getTimestampWithMs();
+    long getEpochMs();
 };

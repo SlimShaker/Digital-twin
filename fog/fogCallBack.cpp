@@ -11,14 +11,12 @@ void fogCallBack::message_arrived(mqtt::const_message_ptr msg) {
         int id = j["id"];
         long timeSentRaw = j["timeSentRaw"];
         std::string timeSent = j["timeSent"];
-        auto now = std::chrono::system_clock::now();
-        auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-        long timeReceivedRaw = ms.time_since_epoch().count();
-        std::string timeReceived = rep.currentTime();
+        long timeReceivedRaw = rep.getEpochMs();
+        std::string timeReceived = rep.getTimestampWithMs();
         float weight = j["weight"];
         twin.updateWeight(weight);
         long delay = timeReceivedRaw - timeSentRaw;
-        std::cout << "Delay: " << delay << " sec" << std::endl;
+        std::cout << "Delay: " << delay << " ms" << std::endl;
         rep.report(id,timeSentRaw,timeReceivedRaw, timeSent,timeReceived,weight);
     } catch (const std::exception& e) {
         std::cerr<<"JSON parse error: "<<e.what()<<std::endl;
