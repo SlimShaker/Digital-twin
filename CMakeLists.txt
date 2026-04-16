@@ -15,4 +15,14 @@ add_executable(project
         fog/fogCallBack.cpp
         logger/reporter.cpp
         logger/reporter.hpp
+        common/config.hpp
+        common/migration_manager.hpp
+        cloud/main.cpp
+        fog/fog1/main.cpp
+        fog/fog1/callback.cpp
+        edge/home/main.cpp
+        edge/work/main.cpp
+        edge/mobile/main.cpp
+        fog/fog2/callback.cpp
+        fog/fog2/main.cpp
 )

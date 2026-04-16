@@ -1,4 +1,4 @@
-#include "fog.hpp"
+#include "../fog.hpp"
 
 int main() {
     fogNode node;
