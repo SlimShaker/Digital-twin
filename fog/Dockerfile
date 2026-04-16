@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libpaho-mqttpp-dev \
     nlohmann-json3-dev
 
-ENV TZ=Europe/Stockholm
+    ENV TZ=Europe/Stockholm
 
 COPY . .
 

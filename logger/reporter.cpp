@@ -2,7 +2,7 @@
 #include "reporter.hpp"
 
 void reporter::report(int id, long timeSentRaw, long timeReceivedRaw, const std::string& timeSent, const std::string& timeReceived, float weight) {
-    std::ofstream file("data/received_data.json", std::ios::app);
+    std::ofstream file("data/received_data.csv", std::ios::app);
     long delay = timeReceivedRaw - timeSentRaw;
     file << id << "," << timeSentRaw << "," << timeReceivedRaw<< "," << delay << "," << timeSent << "," << timeReceived << "," << weight << "\n";
 }
@@ -18,6 +18,7 @@ std::string reporter::getTimestampWithMs() {
     << '.' << std::setfill('0') << std::setw(3) << nowMs.count();
     return nowSs.str();
 }
+//fix round trip timer
 long reporter::getEpochMs() {
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
