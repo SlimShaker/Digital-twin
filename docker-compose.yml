@@ -1,18 +1,45 @@
 version: "3.8"
 services:
   broker:
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:latest
     ports:
       - "1883:1883"
 
-  edge:
+  home:
     build:
       context: .
       dockerfile: edge/Dockerfile
     depends_on:
       - broker
     restart: always
-  fog:
+
+  mobile:
+    build:
+      context: .
+      dockerfile: edge/Dockerfile
+    depends_on:
+      - broker
+    restart: always
+
+  work:
+    build:
+      context: .
+      dockerfile: edge/Dockerfile
+    depends_on:
+      - broker
+    restart: always
+
+  fog-1:
+    volumes:
+      - ./data:/app/data
+    build:
+      context: .
+      dockerfile: fog/Dockerfile
+    depends_on:
+      - broker
+    restart: always
+
+  fog-2:
     volumes:
       - ./data:/app/data
     build:
