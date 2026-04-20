@@ -8,7 +8,7 @@ services:
   home:
     build:
       context: .
-      dockerfile: edge/Dockerfile
+      dockerfile: ./edge/home/Dockerfile
     depends_on:
       - broker
     restart: always
@@ -16,7 +16,7 @@ services:
   mobile:
     build:
       context: .
-      dockerfile: edge/Dockerfile
+      dockerfile: ./edge/mobile/Dockerfile
     depends_on:
       - broker
     restart: always
@@ -24,27 +24,37 @@ services:
   work:
     build:
       context: .
-      dockerfile: edge/Dockerfile
+      dockerfile: ./edge/work/Dockerfile
     depends_on:
       - broker
     restart: always
 
-  fog-1:
+  fog_one:
     volumes:
       - ./data:/app/data
     build:
       context: .
-      dockerfile: fog/Dockerfile
+      dockerfile: ./fog/fog1/Dockerfile
     depends_on:
       - broker
     restart: always
 
-  fog-2:
+  fog_one_broker:
+    image: eclipse-mosquitto:latest
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  fog_two:
     volumes:
       - ./data:/app/data
     build:
       context: .
-      dockerfile: fog/Dockerfile
+      dockerfile: ./fog/fog2/Dockerfile
     depends_on:
       - broker
     restart: always
+
+  fog_two_broker:
+    image: eclipse-mosquitto:latest
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf

@@ -15,9 +15,9 @@ ENV TZ=Europe/Stockholm
 
 COPY . .
 
-RUN g++ edge/main.cpp edge/edge.cpp common/digital_human.cpp logger/reporter.cpp \
+RUN g++ edge/mobile/main.cpp edge/edge.cpp common/digital_human.cpp logger/reporter.cpp \
     -Icommon \
-    -o edge_prog \
+    -o mobile \
     -lpaho-mqttpp3 -lpaho-mqtt3as
 
 CMD ["./edge_prog"]
