@@ -1,10 +1,10 @@
 // Created by Hussein on 2026-04-14.
 #include "reporter.hpp"
 
-void reporter::report(int id, long timeSentRaw, long timeReceivedRaw, const std::string& timeSent, const std::string& timeReceived, float weight) {
+void reporter::report(int id, long timeSentRaw, long timeReceivedRaw, const std::string& timeSent, const std::string& timeReceived, float weight, const std::string& edgeNode) {
     std::ofstream file("data/received_data.csv", std::ios::app);
     long delay = timeReceivedRaw - timeSentRaw;
-    file << id << "," << timeSentRaw << "," << timeReceivedRaw<< "," << delay << "," << timeSent << "," << timeReceived << "," << weight << "\n";
+    file << id << "," << timeSentRaw << "," << timeReceivedRaw<< "," << delay << "," << timeSent << "," << timeReceived << "," << weight << "," << edgeNode << "\n";
 }
 
 std::string reporter::getTimestampWithMs() {

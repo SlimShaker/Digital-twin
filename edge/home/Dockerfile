@@ -20,4 +20,4 @@ RUN g++ edge/home/main.cpp edge/edge.cpp common/digital_human.cpp logger/reporte
     -o home \
     -lpaho-mqttpp3 -lpaho-mqtt3as
 
-CMD ["./edge_prog"]
+CMD ["./home"]

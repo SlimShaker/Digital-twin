@@ -20,4 +20,4 @@ RUN g++ edge/mobile/main.cpp edge/edge.cpp common/digital_human.cpp logger/repor
     -o mobile \
     -lpaho-mqttpp3 -lpaho-mqtt3as
 
-CMD ["./edge_prog"]
+CMD ["./mobile"]

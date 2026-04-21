@@ -1,33 +1,38 @@
 version: "3.8"
 services:
-  broker:
+  cloud_broker:
     image: eclipse-mosquitto:latest
     ports:
       - "1883:1883"
+    volumes:
+      - ./cloud/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  cloud:
+    build:
+      context: .
+      dockerfile: ./cloud/Dockerfile
+    depends_on:
+      - cloud_broker
+    volumes:
+      - ./data:/app/data
 
   home:
     build:
       context: .
       dockerfile: ./edge/home/Dockerfile
-    depends_on:
-      - broker
-    restart: always
+    #restart: always
 
   mobile:
     build:
       context: .
       dockerfile: ./edge/mobile/Dockerfile
-    depends_on:
-      - broker
-    restart: always
+    #restart: always
 
   work:
     build:
       context: .
       dockerfile: ./edge/work/Dockerfile
-    depends_on:
-      - broker
-    restart: always
+    #restart: always
 
   fog_one:
     volumes:
@@ -36,13 +41,15 @@ services:
       context: .
       dockerfile: ./fog/fog1/Dockerfile
     depends_on:
-      - broker
-    restart: always
+      - fog_one_broker
+    #restart: always
 
   fog_one_broker:
     image: eclipse-mosquitto:latest
+    ports:
+      - "1884:1883"
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./fog/fog1/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   fog_two:
     volumes:
@@ -51,10 +58,12 @@ services:
       context: .
       dockerfile: ./fog/fog2/Dockerfile
     depends_on:
-      - broker
-    restart: always
+      - fog_two_broker
+    #restart: always
 
   fog_two_broker:
     image: eclipse-mosquitto:latest
+    ports:
+      - "1885:1883"
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./fog/fog2/mosquitto.conf:/mosquitto/config/mosquitto.conf
