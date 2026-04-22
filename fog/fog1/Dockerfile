@@ -11,13 +11,13 @@ RUN apt-get update && apt-get install -y \
     libpaho-mqttpp-dev \
     nlohmann-json3-dev
 
-    ENV TZ=Europe/Stockholm
+ENV TZ=Europe/Stockholm
 
 COPY . .
 
-RUN g++ fog/main.cpp fog/fog.cpp fog/fogCallBack.cpp common/digital_human.cpp logger/reporter.cpp \
+RUN g++ fog/fog1/main.cpp fog/fog.cpp fog/fogCallBack.cpp common/digital_human.cpp logger/reporter.cpp \
     -Icommon \
-    -o fog_prog \
+    -o fog1 \
     -lpaho-mqttpp3 -lpaho-mqtt3as
 
-CMD ["./fog_prog"]
+CMD ["./fog1"]

@@ -25,4 +25,8 @@ add_executable(project
         edge/mobile/main.cpp
         fog/fog2/callback.cpp
         fog/fog2/main.cpp
+        common/migration_manager.cpp
+        common/migration_manager.cpp
+        common/migration_manager.cpp
+        common/migration_manager.cpp
 )
