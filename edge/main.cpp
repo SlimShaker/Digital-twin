@@ -2,7 +2,9 @@
 #include "edge.hpp"
 #include "../common/config.hpp"
 int main() {
-    edgeNode edge(config::CLOUD_BROKER, config::MOBILE_EDGE_ID, config::TOPIC_MOBILE, config::MOBILE_NODE);
+    std::string type = std::getenv("EDGE_TYPE");
+    std::string topic = std::getenv("TOPIC");
+    edgeNode edge(config::CLOUD_BROKER, "edge_" + type,topic,type);
     edge.start();
     return 0;
 }

@@ -1,11 +1,5 @@
 version: "3.8"
 services:
-  base:
-    build:
-      context: .
-      dockerfile: Dockerfile.base
-    image: project-base
-
   cloud_broker:
     image: eclipse-mosquitto:latest
     ports:
@@ -30,11 +24,39 @@ services:
     volumes:
       - ./data:/app/data
 
-  edge:
+  edge_home:
     build:
       context: .
       dockerfile: ./edge/Dockerfile
+    environment:
+      - EDGE_TYPE=home
+      - TOPIC=human/home
     depends_on:
+      - cloud_broker
+      - fog_one_broker
+      - fog_two_broker
+
+  edge_mobile:
+    build:
+      context: .
+      dockerfile: ./edge/Dockerfile
+    environment:
+      - EDGE_TYPE=mobile
+      - TOPIC=human/mobile
+    depends_on:
+      - cloud_broker
+      - fog_one_broker
+      - fog_two_broker
+
+  edge_work:
+    build:
+      context: .
+      dockerfile: ./edge/Dockerfile
+    environment:
+      - EDGE_TYPE=work
+      - TOPIC=human/work
+    depends_on:
+      - cloud_broker
       - fog_one_broker
       - fog_two_broker
 
