@@ -5,10 +5,7 @@
 #include <iostream>
 
 class migration_manager {
-    digital_human& twin;
-    std::string location{};
-
 public:
-    migration_manager(digital_human& t, const std::string& loc) : twin(t), location(loc) {}
     std::string decideNode(const std::string& location);
+    void moveTwin(const std::string& targetNode);
 };

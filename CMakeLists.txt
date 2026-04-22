@@ -29,4 +29,6 @@ add_executable(project
         common/migration_manager.cpp
         common/migration_manager.cpp
         common/migration_manager.cpp
+        edge/main.cpp
+        fog/main.cpp
 )

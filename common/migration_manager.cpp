@@ -3,8 +3,14 @@
 
 std::string migration_manager::decideNode(const std::string& loc) {
     if (loc == "home")
-        return "fog1";
+        return "fog_one";
     if (loc =="work")
-        return "fog2";
+        return "fog_two";
     return "cloud";
+}
+void migration_manager::moveTwin(const std::string& targetNode) {
+    std::string stopTwinCMD="docker compose stop twin";
+    std::string startTwinCMD="docker compose up -d " + targetNode;
+    system(stopTwinCMD.c_str());
+    system(startTwinCMD.c_str());
 }
