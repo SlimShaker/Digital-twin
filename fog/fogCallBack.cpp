@@ -1,25 +1,24 @@
 #include "fogCallBack.hpp"
 
 
-
-fogCallBack::fogCallBack(digital_human& t, const std::string& id) : twin(t), fogId(id) {}
+fogCallBack::fogCallBack(digital_human& t) : twin(t) {}
 
 void fogCallBack::message_arrived(mqtt::const_message_ptr msg) {
+    std::string payload = msg->to_string();
+    std::cout<<"Received payload: " <<payload<<std::endl;
     try {
-        auto j=nlohmann::json::parse(msg->to_string());
-        float weight=j["weight"];
-        long timeSentRaw=j["timeSentRaw"];
-        j["timeReceivedRaw"]=rep.getEpochMs();
+        nlohmann::json j = nlohmann::json::parse(payload);
+        int id = j["id"];
+        long timeSentRaw = j["timeSentRaw"];
+        std::string timeSent = j["timeSent"];
+        long timeReceivedRaw = rep.getEpochMs();
+        std::string timeReceived = rep.getTimestampWithMs();
+        float weight = j["weight"];
         twin.updateWeight(weight);
-        j["fogNode"]=fogId;
-        std::cout<<"Fog "<<fogId<<" delay: "<< (rep.getEpochMs() - timeSentRaw)<< " ms\n";
-        if (forward) {
-            forward(j.dump());
-        }
-    }catch (const std::exception& e) {
-        std::cerr<<"fog json error: "<<e.what()<<std::endl;
+        long delay = timeReceivedRaw - timeSentRaw;
+        std::cout << "Delay: " << delay << " ms" << std::endl;
+        rep.report(id,timeSentRaw,timeReceivedRaw, timeSent,timeReceived,weight);
+    } catch (const std::exception& e) {
+        std::cerr<<"JSON parse error: "<<e.what()<<std::endl;
     }
-}
-void fogCallBack::setForwarder(std::function<void(const std::string&)> f) {
-    forward = f;
 }
