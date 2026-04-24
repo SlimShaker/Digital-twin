@@ -20,7 +20,16 @@ void cloudCallBack::message_arrived(mqtt::const_message_ptr msg) {
         int id = j["id"];
         float weight = j["weight"];
         std::string edgeNode = j.value("edgeNode", "unknown");
-        std::cout << "[CLOUD] total latency: " << total << " ms\n";
+        std::string fogNode = j.value("fogNode", "unknown");
+        std::cout << "[CLOUD] "
+          << "edge=" << edgeNode
+          << " -> fog=" << fogNode
+          << " | total=" << total << " ms"
+          << " (e2f=" << edgeToFog
+          << ", proc=" << fogProcess
+          << ", f2c=" << fogToCloud
+          << ")"
+          << std::endl;
         rep.report(id,edgeSent,cloudReceived,edgeToFog,fogProcess,fogToCloud,total,weight,edgeNode);
     } catch (const std::exception& e) {
         std::cerr << "json parse error: " << e.what() << std::endl;

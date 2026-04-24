@@ -9,6 +9,6 @@ void cloud::start() {
     client.subscribe("cloud/data", 1)->wait();
     std::cout << "Cloud running...\n";
     while (true) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
 }

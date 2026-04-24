@@ -56,6 +56,7 @@ services:
     environment:
       - EDGE_TYPE=home
       - TOPIC=human/home
+      - BROKER=tcp://smart_router_broker:1883
     depends_on:
       - cloud_broker
       - smart_router
@@ -68,6 +69,7 @@ services:
     environment:
       - EDGE_TYPE=mobile
       - TOPIC=human/mobile
+      - BROKER=tcp://cloud_broker:1883
     depends_on:
       - cloud_broker
       - smart_router
@@ -80,6 +82,7 @@ services:
     environment:
       - EDGE_TYPE=work
       - TOPIC=human/work
+      - BROKER=tcp://local_server_broker:1883
     depends_on:
       - cloud_broker
       - smart_router
