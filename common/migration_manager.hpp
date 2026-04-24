@@ -1,6 +1,7 @@
 //Created by Hussein 2026-04-17
 #pragma once
 #include "digital_human.hpp"
+#include "config.hpp"
 #include <string>
 #include <iostream>
 

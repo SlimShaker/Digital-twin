@@ -3,9 +3,9 @@
 
 std::string migration_manager::decideNode(const std::string& loc) {
     if (loc == "home")
-        return "fog_one";
+        return "smart_router";
     if (loc =="work")
-        return "fog_two";
+        return "local_server";
     return "cloud";
 }
 void migration_manager::moveTwin(const std::string& targetNode) {

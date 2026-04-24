@@ -7,13 +7,16 @@ fogCallBack::fogCallBack(digital_human& t, const std::string& id) : twin(t), fog
 void fogCallBack::message_arrived(mqtt::const_message_ptr msg) {
     try {
         auto j=nlohmann::json::parse(msg->to_string());
+        long long now = rep.getEpochMs();
+        j["trace"]["fog_received"]=now;
+        j["fogNode"]=fogId;
         float weight=j["weight"];
-        long timeSentRaw=j["timeSentRaw"];
+        long long timeSentRaw=j["timeSentRaw"];
         j["timeReceivedRaw"]=rep.getEpochMs();
         twin.updateWeight(weight);
-        j["fogNode"]=fogId;
         std::cout<<"Fog "<<fogId<<" delay: "<< (rep.getEpochMs() - timeSentRaw)<< " ms\n";
         if (forward) {
+            j["trace"]["fog_forwarded"]=rep.getEpochMs();
             forward(j.dump());
         }
     }catch (const std::exception& e) {

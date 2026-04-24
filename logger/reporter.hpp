@@ -9,7 +9,7 @@
 
 class reporter {
 public:
-    void report(int id, long timeSentRaw, long timeReceivedRaw, const std::string& timeSent, const std::string& timeReceived, float weight, const std::string& edgeNode);
+    void report(int id, long long edgeSent, long long cloudReceived, long long edgeToFog, long long fogProcess, long long fogToCloud, long long total, float weight, const std::string& edgeNode);
     std::string getTimestampWithMs();
     long getEpochMs();
 };

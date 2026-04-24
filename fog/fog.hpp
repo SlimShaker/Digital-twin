@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <mqtt/async_client.h>
+#include "../common/config.hpp"
 #pragma once
 class fogNode {
     std::string nodeId;
@@ -10,6 +11,7 @@ class fogNode {
     digital_human twin;
     fogCallBack cb;
     mqtt::async_client client;
+    mqtt::async_client cloudClient;
 public:
     fogNode(const std::string& nId, const std::string& broker);
     void start();
