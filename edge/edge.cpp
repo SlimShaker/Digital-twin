@@ -24,6 +24,6 @@ void edgeNode::start() {
         std::string payload = j.dump();
         client.publish(topic, payload.c_str(), payload.size(), 1, false);
         std::cout<<"EDGE SENT: " << payload << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
