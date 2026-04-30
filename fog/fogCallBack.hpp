@@ -7,7 +7,6 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "../logger/reporter.hpp"
-
 class fogCallBack : public mqtt::callback {
     digital_human& twin;
     reporter rep;

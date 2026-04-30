@@ -1,7 +1,5 @@
 #include "fogCallBack.hpp"
 
-
-
 fogCallBack::fogCallBack(digital_human& t, const std::string& id) : twin(t), fogId(id) {}
 
 void fogCallBack::message_arrived(mqtt::const_message_ptr msg) {

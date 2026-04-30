@@ -4,6 +4,7 @@
 #include <thread>
 #include <mqtt/async_client.h>
 #include "../common/config.hpp"
+#include <nlohmann/json.hpp>
 #pragma once
 class fogNode {
     std::string nodeId;

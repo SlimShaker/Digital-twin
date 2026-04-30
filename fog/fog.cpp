@@ -1,7 +1,7 @@
 // Created by Hussein on 2026-04-12.
 #include "fog.hpp"
 
-fogNode::fogNode(const std::string& nId, const std::string& broker) : nodeId(nId), brokerAddress(broker), client(broker, nId), cloudClient(config::CLOUD_BROKER, nId + "_cloud"), twin(70.0), cb(twin, nId){
+fogNode::fogNode(const std::string& nId, const std::string& broker) : nodeId(nId), brokerAddress(broker), client(broker, nId), cloudClient(config::CLOUD_BROKER, nId + "_cloud"), twin(70.0), cb(twin, nId) {
     cb.setForwarder([this](const std::string& msg) {
         forwardToCloud(msg);
     });
@@ -48,5 +48,7 @@ void fogNode::start(){
 }
 void fogNode::forwardToCloud(const std::string& msg) {
     std::cout << "FOG RECEIVED: " << msg << std::endl;
-    cloudClient.publish("cloud/data", msg.c_str(), msg.size(), 1, false);
+    nlohmann::json j = nlohmann::json::parse(msg);
+    j["type"] = "data";
+    cloudClient.publish("twin/data", j.dump().c_str(), j.dump().size(), 1, false);
 }
