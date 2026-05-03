@@ -1,63 +1,117 @@
 version: "3.8"
-
 services:
 
-  twin:
-    image: project-twin:latest
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    configs:
+      - source: mosquitto_config
+        target: /mosquitto/config/mosquitto.conf
+    volumes:
+      - mosquitto_data:/mosquitto/data
     networks:
       - iot_net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  cloud:
+    image: project-cloud:latest
     environment:
-      - BROKER=tcp://192.168.1.217:1883
+      - BROKER=tcp://mosquitto:1883
+    networks:
+      - iot_net
     deploy:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == fog
-      restart_policy:
-        condition: any
+          - node.role == manager
+
+  twin:
+    image: project-twin:latest
+    environment:
+      - BROKER=tcp://mosquitto:1883
+    networks:
+      - iot_net
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   fog_home:
     image: project-fog:latest
+    environment:
+      - BROKER=tcp://mosquitto:1883
+      - FOG_NODE=home
     networks:
       - iot_net
-    environment:
-      - BROKER=tcp://192.168.1.217:1883
-      - FOG_NODE=home
     deploy:
       placement:
         constraints:
-          - node.labels.type == fog
+          - node.labels.fog == home
 
   fog_work:
     image: project-fog:latest
+    environment:
+      - BROKER=tcp://mosquitto:1883
+      - FOG_NODE=work
     networks:
       - iot_net
-    environment:
-      - BROKER=tcp://192.168.1.217:1883
-      - FOG_NODE=work
     deploy:
       placement:
         constraints:
-          - node.labels.type == fog
+          - node.labels.fog == work
 
   edge_home:
     image: project-edge:latest
-    networks:
-      - iot_net
     environment:
       - EDGE_TYPE=home
-      - TOPIC=human/home
-      - BROKER=tcp://192.168.1.217:1883
+      - BROKER=tcp://mosquitto:1883
+      - HAS_FOG=true
+    networks:
+      - iot_net
+    deploy:
+      placement:
+        constraints:
+          - node.labels.edge == home
 
   edge_work:
     image: project-edge:latest
-    networks:
-      - iot_net
     environment:
       - EDGE_TYPE=work
-      - TOPIC=human/work
-      - BROKER=tcp://192.168.1.217:1883
+      - BROKER=tcp://mosquitto:1883
+      - HAS_FOG=true
+    networks:
+      - iot_net
+    deploy:
+      placement:
+        constraints:
+          - node.labels.edge == work
+
+  edge_mobile:
+    image: project-edge:latest
+    environment:
+      - EDGE_TYPE=mobile
+      - BROKER=tcp://mosquitto:1883
+      - HAS_FOG=false
+    networks:
+      - iot_net
+    deploy:
+      placement:
+        constraints:
+          - node.labels.edge == mobile
 
 networks:
   iot_net:
     driver: overlay
+    attachable: true
+
+volumes:
+  mosquitto_data:
+
+configs:
+  mosquitto_config:
+    file: ./cloud/mosquitto.conf

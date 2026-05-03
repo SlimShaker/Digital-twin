@@ -1,9 +1,10 @@
 // Created by Hussein on 2026-04-14.
 #include "reporter.hpp"
 
-void reporter::report(int id, long long edgeSent, long long cloudReceived, long long edgeToFog, long long fogProcess, long long fogToCloud, long long total, float weight, const std::string& edgeNode){
-    std::ofstream file("data/received_data.csv", std::ios::app);
-    file << id << "," << edgeSent << "," << cloudReceived<< "," << edgeToFog << "," << fogProcess << "," << fogToCloud << "," << total << "," << weight << "," << edgeNode<<"\n";
+void reporter::report(int id, long long edgeSent, long long cloudReceived, long long e2f, long long proc, long long f2c, long long total, float weight, const std::string& edgeNode){
+    std::ofstream file("data/latency.csv", std::ios::app);
+    file << id << "," << edgeSent << "," << cloudReceived << "," << e2f << ","<< proc << "," << f2c << "," << total << "," << weight << "," << edgeNode << "\n";
+    file.flush();
 }
 
 std::string reporter::getTimestampWithMs() {
@@ -18,8 +19,8 @@ std::string reporter::getTimestampWithMs() {
     return nowSs.str();
 }
 //fix round trip timer
-long reporter::getEpochMs() {
+long long reporter::getEpochMs() {
     auto now = std::chrono::system_clock::now();
-    auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-    return ms.time_since_epoch().count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()).count();
 }

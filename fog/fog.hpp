@@ -1,20 +1,19 @@
+#pragma once
+#include <mqtt/async_client.h>
+#include <nlohmann/json.hpp>
 #include "fogCallBack.hpp"
-#include "../common/digital_human.hpp"
 #include <iostream>
 #include <thread>
-#include <mqtt/async_client.h>
 #include "../common/config.hpp"
-#include <nlohmann/json.hpp>
-#pragma once
+#include "../logger/reporter.hpp"
+
 class fogNode {
-    std::string nodeId;
-    std::string brokerAddress;
-    digital_human twin;
-    fogCallBack cb;
     mqtt::async_client client;
     mqtt::async_client cloudClient;
+    fogCallBack cb;
+
 public:
-    fogNode(const std::string& nId, const std::string& broker);
+    fogNode(const std::string& broker, const std::string& id);
     void start();
-    void forwardToCloud(const std::string& msg);
+    void forward(const std::string& msg);
 };

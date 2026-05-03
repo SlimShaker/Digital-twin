@@ -1,23 +1,21 @@
+//Created by Hussein 2026-05-01
 #pragma once
-#include "../common/digital_human.hpp"
 #include <mqtt/async_client.h>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <iostream>
 #include <thread>
-#include "../common/config.hpp"
-#include <cstdlib>
 
 class twinService {
-    digital_human twin;
     mqtt::async_client client;
     std::string nodeRole;
+    std::string activeEdge;
+    int counter;
 
 public:
-    twinService(const std::string& broker, const std::string& id);
+    twinService(const std::string& broker, const std::string& role);
     void start();
-    void updateFromData(const nlohmann::json& j);
-    void applyMigration(const nlohmann::json& j);
-    void migrate(const std::string& target);
-    nlohmann::json exportState();
-    std::string getNodeId()const;
+    void setActiveLane(const std::string& edge);
+    void handleMessage(const nlohmann::json& j);
+    std::string resolveRoute(const std::string& edge);
 };

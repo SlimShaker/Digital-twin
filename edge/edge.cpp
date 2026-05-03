@@ -1,29 +1,28 @@
 // Created by Hussein on 2026-04-12.
 #include "edge.hpp"
 
-edgeNode::edgeNode(const std::string& address, const std::string& id, const std::string& topic, const std::string& edge_t) :
-    client(address, id),
-    topic(topic),
-    edge_type(edge_t) {}
-
+edgeNode::edgeNode(const std::string& broker, const std::string& type, const std::string& topic) : client(broker, "edge_" + type), edge_type(type), counter(0) {}
 
 void edgeNode::start() {
-    int nsample = 0;
-    client.connect()->wait();
-    reporter rep;
+    while (!client.is_connected()) {
+        try {
+            client.connect()->wait();
+        } catch (...) {
+            std::cout << "[EDGE] retrying broker...\n";
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+        }
+    }
+    std::cout << "[EDGE] started: " << edge_type << std::endl;
+    std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<> dist(0, 100);
     while (true) {
-        float value = rand() % 100;
-        long long timeSentRaw = rep.getEpochMs();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
         nlohmann::json j;
-        j["id"] = ++nsample;
-        j["timeSentRaw"] = timeSentRaw;
-        j["timeSent"] = rep.getTimestampWithMs();;
-        j["weight"] = value;
-        j["edgeNode"]=edge_type;
-        j["trace"]["edge_sent"]=timeSentRaw;
-        std::string payload = j.dump();
-        client.publish(topic, payload.c_str(), payload.size(), 1, false);
-        std::cout<<"EDGE SENT: " << payload << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        j["edgeNode"] = edge_type;
+        j["id"] = counter++;
+        j["weight"] = dist(gen);
+
+        client.publish(config::TOPIC_TWIN, j.dump().c_str(), j.dump().size(), 1, false);
+        std::cout << "[EDGE] sent from " << edge_type << "\n";
     }
 }

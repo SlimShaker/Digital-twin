@@ -11,5 +11,5 @@ class reporter {
 public:
     void report(int id, long long edgeSent, long long cloudReceived, long long edgeToFog, long long fogProcess, long long fogToCloud, long long total, float weight, const std::string& edgeNode);
     std::string getTimestampWithMs();
-    long getEpochMs();
+    long long getEpochMs();
 };
