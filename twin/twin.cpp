@@ -10,7 +10,7 @@ void twinService::start() {
     loadRoutingConfig(file);
     client.set_callback(cb);
     client.connect()->wait();
-    client.subscribe(config::TOPIC_TWIN, 1)->wait();
+    client.subscribe(config::TOPIC_TWIN, 1)->wait(); //Lyssna på edge
     std::cout << "[TWIN] Running on " << nodeRole << std::endl;
     while (true)
         std::this_thread::sleep_for(std::chrono::seconds(5));

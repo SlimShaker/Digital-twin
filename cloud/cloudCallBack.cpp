@@ -5,8 +5,7 @@ void cloudCallBack::message_arrived(mqtt::const_message_ptr msg) {
     try {
         auto j = nlohmann::json::parse(payload);
         if (!j.contains("trace")) {
-            std::cerr << "[CLOUD] Missing trace\n";
-            return;
+            j["trace"]=nlohmann::json::object();
         }
         auto trace = j["trace"];
 
@@ -21,7 +20,9 @@ void cloudCallBack::message_arrived(mqtt::const_message_ptr msg) {
         long long total = cloudReceived - edgeSent;
 
         std::string edgeNode = j.value("edgeNode", "unknown");
-        std::string fogNode = j.value("fogNode", "none");
+        std::string fogNode = j.value("fogNode", "DIRECT");
+        
+        std::string path = (fogNode == "DIRECT") ? "EDGE→CLOUD" : "EDGE→FOG→CLOUD";
 
         std::cout << "[CLOUD] "<< edgeNode << " -> " << fogNode << " | total=" << total << " ms" << std::endl;
         rep.report(j.value("id", -1), edgeSent, cloudReceived, e2f, proc, f2c, total, j.value("weight", 0.0f), edgeNode);

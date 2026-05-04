@@ -6,7 +6,7 @@ void cloud::start() {
     cloudCallBack cb(rep);
     client.set_callback(cb);
     client.connect()->wait();
-    client.subscribe("twin/data",1)->wait();
+    client.subscribe(config::TOPIC_TWIN,1)->wait();
     std::cout << "cloud logger statred" << std::endl;
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(10));

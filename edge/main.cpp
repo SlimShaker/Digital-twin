@@ -7,9 +7,9 @@ int main() {
     std::string type = type_env ? type_env : "unknown";
     std::string topic = topic_env ? topic_env : "human/#";
     std::string broker;
-    if (type == config::MOBILE_EDGE_ID)
+    if (type == config::MOBILE_EDGE_TYPE)
         broker = config::CLOUD_BROKER;
-    else if (type == config::WORK_EDGE_ID)
+    else if (type == config::WORK_EDGE_TYPE)
         broker = config::FOG2_BROKER;
     else
         broker = config::FOG1_BROKER;

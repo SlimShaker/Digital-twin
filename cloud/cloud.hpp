@@ -5,6 +5,7 @@
 #include "cloudCallBack.hpp"
 #include <mqtt/async_client.h>
 #include <thread>
+#include "../common/config.hpp"
 
 class cloud {
     mqtt::async_client client;
