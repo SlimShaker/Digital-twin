@@ -1,26 +1,9 @@
 version: "3.8"
 services:
-
-  mosquitto:
-    image: eclipse-mosquitto:2
-    ports:
-      - "1883:1883"
-    configs:
-      - source: mosquitto_config
-        target: /mosquitto/config/mosquitto.conf
-    volumes:
-      - mosquitto_data:/mosquitto/data
-    networks:
-      - iot_net
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-
   cloud:
     image: project-cloud:latest
     environment:
-      - BROKER=tcp://mosquitto:1883
+      - BROKER=tcp://cloud_broker:1883
     networks:
       - iot_net
     deploy:
@@ -32,7 +15,7 @@ services:
   twin:
     image: project-twin:latest
     environment:
-      - BROKER=tcp://mosquitto:1883
+      - BROKER=tcp://cloud_broker:1883
     networks:
       - iot_net
     deploy:
@@ -44,7 +27,7 @@ services:
   fog_home:
     image: project-fog:latest
     environment:
-      - BROKER=tcp://mosquitto:1883
+      - BROKER=tcp://smart_router_broker:1883
       - FOG_NODE=home
     networks:
       - iot_net
@@ -56,7 +39,7 @@ services:
   fog_work:
     image: project-fog:latest
     environment:
-      - BROKER=tcp://mosquitto:1883
+      - BROKER=tcp://local_server_broker:1883
       - FOG_NODE=work
     networks:
       - iot_net
@@ -69,7 +52,7 @@ services:
     image: project-edge:latest
     environment:
       - EDGE_TYPE=home
-      - BROKER=tcp://mosquitto:1883
+      - TOPIC=human/home
       - HAS_FOG=true
     networks:
       - iot_net
@@ -82,7 +65,7 @@ services:
     image: project-edge:latest
     environment:
       - EDGE_TYPE=work
-      - BROKER=tcp://mosquitto:1883
+      - TOPIC=human/work
       - HAS_FOG=true
     networks:
       - iot_net
@@ -95,7 +78,7 @@ services:
     image: project-edge:latest
     environment:
       - EDGE_TYPE=mobile
-      - BROKER=tcp://mosquitto:1883
+      - TOPIC=cloud/data
       - HAS_FOG=false
     networks:
       - iot_net
@@ -104,14 +87,33 @@ services:
         constraints:
           - node.labels.edge == mobile
 
+  smart_router_broker:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1884:1883"
+    volumes:
+      - ./mosquitto/fog.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - iot_net
+
+  local_server_broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1885:1883"
+    volumes:
+      - ./mosquitto/fog.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - iot_net
+
+  cloud_broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1886:1883"
+    volumes:
+      - ./mosquitto/cloud.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - iot_net
 networks:
   iot_net:
     driver: overlay
     attachable: true
-
-volumes:
-  mosquitto_data:
-
-configs:
-  mosquitto_config:
-    file: ./cloud/mosquitto.conf

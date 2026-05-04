@@ -1,16 +1,11 @@
 // Created by Hussein on 2026-04-12.
 #include "fog.hpp"
 
-fogNode::fogNode(const std::string& broker, const std::string& id)
-    : client(broker, id),
-      cloudClient(broker, "fog_cloud"),
-      cb(id) {
-
+fogNode::fogNode(const std::string& broker, const std::string& id) : client(broker, id), cloudClient(config::CLOUD_BROKER, "fog_cloud"), cb(id), nodeId(id){
     cb.setForwarder([this](const std::string& msg) {
         forward(msg);
     });
 }
-
 void fogNode::start() {
     while (!client.is_connected()) {
         try {
@@ -28,18 +23,26 @@ void fogNode::start() {
             std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     }
-
-    client.subscribe("human/#", 1)->wait();
     client.set_callback(cb);
+    std::string topic = (nodeId == config::FOG1_ID) ? config::TOPIC_HOME : config::TOPIC_WORK;
+    client.subscribe(topic, 1)->wait();
     std::cout << "[FOG] running...\n";
     while (true)
         std::this_thread::sleep_for(std::chrono::seconds(10));
 }
 
 void fogNode::forward(const std::string& msg) {
-    cloudClient.publish("twin/data",
-        msg.c_str(),
-        msg.size(),
+    auto j = nlohmann::json::parse(msg);
+    j["trace"]["fog_forwarded"] = rep.getEpochMs();
+    if (j.contains("weight")) {
+        int w = j["weight"];
+        j["fog_score"] = w * 2;
+    }
+    cloudClient.publish(
+        config::TOPIC_TWIN,
+        j.dump().c_str(),
+        j.dump().size(),
         1,
-        false);
+        false
+    );
 }

@@ -8,9 +8,11 @@
 #include "../logger/reporter.hpp"
 
 class fogNode {
+    std::string nodeId;
     mqtt::async_client client;
     mqtt::async_client cloudClient;
     fogCallBack cb;
+    reporter rep;
 
 public:
     fogNode(const std::string& broker, const std::string& id);

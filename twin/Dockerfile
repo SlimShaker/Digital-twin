@@ -1,7 +1,8 @@
 FROM project-base:latest
 
 WORKDIR /app
-COPY . .
+COPY twin /app/twin
+COPY common /app/common
 
 RUN g++ twin/main.cpp twin/twin.cpp twin/twinCallback.cpp \
     -Itwin \

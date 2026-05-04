@@ -1,0 +1,17 @@
+{
+  "routes": [
+    {
+      "edge": "home",
+      "target": "fog1"
+    },
+    {
+      "edge": "work",
+      "target": "fog2"
+    },
+    {
+      "edge": "mobile",
+      "target": "cloud"
+    }
+  ],
+  "default": "cloud"
+}

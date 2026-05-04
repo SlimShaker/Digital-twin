@@ -10,13 +10,8 @@ void fogCallBack::setForwarder(std::function<void(const std::string&)> f) {
 void fogCallBack::message_arrived(mqtt::const_message_ptr msg) {
     try {
         auto j = nlohmann::json::parse(msg->to_string());
-        if (!j.contains("trace"))
-            j["trace"] = nlohmann::json::object();
-        long long now = rep.getEpochMs();
-        j["trace"]["fog_received"] = now;
-        now = rep.getEpochMs();
-        j["trace"]["fog_forwarded"] = now;
         j["fogNode"] = fogId;
+        j["trace"]["fog_received"] = rep.getEpochMs();
         if (forward)
             forward(j.dump());
     } catch (const std::exception& e) {

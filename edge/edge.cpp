@@ -1,7 +1,7 @@
 // Created by Hussein on 2026-04-12.
 #include "edge.hpp"
 
-edgeNode::edgeNode(const std::string& broker, const std::string& type, const std::string& topic) : client(broker, "edge_" + type), edge_type(type), counter(0) {}
+edgeNode::edgeNode(const std::string& broker, const std::string& type, const std::string& topic) : client(broker, "edge_" + type), edge_type(type),topic_name(topic), counter(0) {}
 
 void edgeNode::start() {
     while (!client.is_connected()) {
@@ -21,6 +21,7 @@ void edgeNode::start() {
         j["edgeNode"] = edge_type;
         j["id"] = counter++;
         j["weight"] = dist(gen);
+        j["trace"]["edge_sent"]=rep.getEpochMs();
 
         client.publish(config::TOPIC_TWIN, j.dump().c_str(), j.dump().size(), 1, false);
         std::cout << "[EDGE] sent from " << edge_type << "\n";
