@@ -2,7 +2,9 @@
 #include "reporter.hpp"
 
 void reporter::report(int id, long long edgeSent, long long cloudReceived, long long e2f, long long proc, long long f2c, long long total, float weight, const std::string& edgeNode){
-    std::ofstream file("data/latency.csv", std::ios::app);
+    const char* data_dir = std::getenv("DATA_DIR");
+    std::string path = data_dir ? std::string(data_dir) + "/latency.csv" : "data/latency.csv";
+    std::ofstream file(path, std::ios::app);
     file << id << "," << edgeSent << "," << cloudReceived << "," << e2f << ","<< proc << "," << f2c << "," << total << "," << weight << "," << edgeNode << "\n";
     file.flush();
 }

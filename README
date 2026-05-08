@@ -9,6 +9,8 @@ ssh fog2@192.168.1.222 -- MASTER
 
 docker swarm join --token SWMTKN-1-3malf5la42291ktjv6ujiooq69brk9kuzqabx2lb4qgv71i3dg-6ae4fc16jrxyb9lz1qqr8gcln 192.168.1.222:2377
 
+#starta cloud med mount fil
+docker run -d --name cloud -e BROKER=tcp://192.168.1.217:1883 -e DATA_DIR=/data -v C:\Users\zhass\Desktop\Kurser\exjobb\project\data:/data 192.168.1.217:5000/cloud
 #starta cloud broker med config filen
 docker run -d --name cloud_broker -p 1883:1883 -v C:\Users\zhass\Desktop\Kurser\exjobb\project\cloud\mosquitto.conf:/mosquitto/config/mosquitto.conf eclipse-mosquitto
 
@@ -16,17 +18,17 @@ docker run -d --name cloud_broker -p 1883:1883 -v C:\Users\zhass\Desktop\Kurser\
 curl http://192.168.1.217:5000/v2/_catalog
 
 #base-image för alla arkitekturer
-docker buildx build --platform linux/arm/v7,linux/arm/v8 -f Dockerfile.base -t 192.168.1.217:5000/project-base --push --provenance=false .
+docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm/v8 -f Dockerfile.base -t 192.168.1.217:5000/project-base --push --provenance=false --no-cache .
 
 #arm/v7 = Ehome, Emob
-docker buildx build --platform linux/arm/v7 -f edge/Dockerfile -t 192.168.1.217:5000/edge_home:v7 --push --provenance=false --no-cache .
-docker buildx build --platform linux/arm/v7 -f edge/Dockerfile -t 192.168.1.217:5000/edge_mobile:v7 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v7 -f edge/Dockerfile -t 192.168.1.217:5000/edge_home:v8 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v7 -f edge/Dockerfile -t 192.168.1.217:5000/edge_mobile:v8 --push --provenance=false --no-cache .
 
 #arm/v8 = Ework, fog1, fog2
-docker buildx build --platform linux/arm/v8 -f edge/Dockerfile -t 192.168.1.217:5000/edge_work:v7 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v8 -f edge/Dockerfile -t 192.168.1.217:5000/edge_work:v8 --push --provenance=false --no-cache .
 docker buildx build --platform linux/arm/v8 -f fog/Dockerfile -t 192.168.1.217:5000/fog1:v2 --push --provenance=false --no-cache .
 docker buildx build --platform linux/arm/v8 -f fog/Dockerfile -t 192.168.1.217:5000/fog2:v2 --push --provenance=false --no-cache .
-docker buildx build --platform linux/arm/v8 -f twin/Dockerfile -t 192.168.1.217:5000/twin:v8 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v7,linux/arm/v8 -f twin/Dockerfile -t 192.168.1.217:5000/twin:v11 --push --provenance=false --no-cache .
 
 docker service create --name edge_home --constraint 'node.hostname==Ehome' -e BROKER=tcp://192.168.1.217:1883 -e EDGE_TYPE=home 192.168.1.217:5000/edge_home
 
@@ -38,7 +40,7 @@ docker service create --name fog1_service --constraint 'node.hostname==fog1' -e 
 
 docker service create --name fog2_service --constraint 'node.hostname==fog2' -e BROKER=tcp://192.168.1.217:1883 -e FOG_NODE=local_server 192.168.1.217:5000/fog2
 
-docker service create --name twin --constraint 'node.hostname==Emob' -e BROKER=tcp://192.168.1.217:1883 192.168.1.217:5000/twin
+docker service create --name twin --constraint 'node.hostname==Emob' --restart-condition on-failure -e BROKER=tcp://192.168.1.217:1883 192.168.1.217:5000/twin:v11
 
 
 
@@ -47,15 +49,15 @@ docker service scale edge_home=0 edge_mobile=0 edge_work=0 fog1_service=0 fog2_s
 #Starta
 docker service scale edge_home=1 edge_mobile=1 edge_work=1 fog1_service=1 fog2_service=1 twin=1
 #update
-docker service update --image 192.168.1.217:5000/edge_home:v7 edge_home
-docker service update --image 192.168.1.217:5000/edge_work:v7 edge_work
-docker service update --image 192.168.1.217:5000/edge_mobile:v7 edge_mobile
+docker service update --image 192.168.1.217:5000/edge_home:v8 edge_home
+docker service update --image 192.168.1.217:5000/edge_mobile:v8 edge_mobile
+docker service update --image 192.168.1.217:5000/edge_work:v8 edge_work
 docker service update --image 192.168.1.217:5000/fog1:v2 fog1_service
 docker service update --image 192.168.1.217:5000/fog2:v2 fog2_service
-docker service update --image 192.168.1.217:5000/twin:v8 twin
+docker service update --image 192.168.1.217:5000/twin:v11 twin
 #radera
-docker rmi 192.168.1.217:5000/edge_home
-docker rmi 192.168.1.217:5000/edge_mobile
+docker service rm SERVICE
+docker service rm twin
 
 
 #Brokers måste starta med allow_anonymous
@@ -67,3 +69,16 @@ docker run -d --name local_server_broker -p 1883:1883 -v ~/mosquitto/config:/mos
 
 #RENSA IMAGES
 docker image prune -af
+
+#uppdatera twin script
+docker service update \
+  --constraint-rm 'node.hostname==Ehome' \
+  --constraint-rm 'node.hostname==Emob' \
+  --constraint-rm 'node.hostname==Ework' \
+  --constraint-add 'node.hostname==Ehome' \
+  --env-rm NODE_ROLE \
+  --env-add 'NODE_ROLE=home' \
+  twin
+
+#kopiera
+docker cp cloud:/app/data/latency.csv C:\Users\zhass\Desktop\Kurser\exjobb\project\data\

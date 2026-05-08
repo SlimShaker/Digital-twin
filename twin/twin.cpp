@@ -8,6 +8,9 @@ void twinService::start() {
     client.set_callback(cb);
     client.connect()->wait();
     std::cout << "[TWIN] Running on " << device << std::endl;
+    if (device == "home") currentPhase = 0;
+    else if (device == "mobile") currentPhase = 1;
+    else currentPhase = 2;
     std::this_thread::sleep_for(std::chrono::seconds(5));
     broadcastActive(device);
     std::thread([this]() {
@@ -36,18 +39,22 @@ void twinService::switchPhase(int phase) {
     std::string targetNode;
     if (phase == 0) {
         activeEdge = "home";
+        targetNode = "Ehome";
         std::cout << "[TWIN] Phase 0: hemma" << std::endl;
     } else if (phase == 1) {
         activeEdge = "mobile";
+        targetNode = "Emob";
         std::cout << "[TWIN] Phase 1: resande" << std::endl;
     } else {
         activeEdge = "work";
+        targetNode = "Ework";
         std::cout << "[TWIN] Phase 2: jobbet" << std::endl;
     }
     nlohmann::json migrate;
     migrate["action"]="migrate";
     migrate["target"] = targetNode;
     migrate["role"] = activeEdge;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     client.publish("system/migrate", migrate.dump().c_str(), migrate.dump().size(), 1, false);
     broadcastActive(activeEdge);
 }

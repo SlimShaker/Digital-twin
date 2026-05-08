@@ -6,6 +6,8 @@ edgeNode::edgeNode(const std::string& broker, const std::string& type, const std
     laneClient = std::make_unique<mqtt::async_client>(config::CLOUD_BROKER, "lane_"+edge_type);
     cb.setActiveHandler([this](bool a) {
         active = a;
+        if (a)
+            counter=0;
         std::cout << "[EDGE " << edge_type << "] active=" << a << std::endl;
     });
     client->set_callback(cb);
