@@ -1,4 +1,4 @@
-FROM project-base
+FROM 192.168.1.217:5000/project-base
 WORKDIR /app
 COPY . .
 RUN g++ cloud/main.cpp cloud/cloud.cpp cloud/cloudCallBack.cpp logger/reporter.cpp \

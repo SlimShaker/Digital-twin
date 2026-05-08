@@ -1,3 +1,4 @@
+// Created by Hussein on 2026-04-12.
 #include "fogCallBack.hpp"
 
 fogCallBack::fogCallBack(const std::string& id)

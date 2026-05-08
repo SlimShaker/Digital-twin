@@ -1,8 +1,9 @@
 #pragma once
 #include <mqtt/async_client.h>
-#include "twin.hpp"
 #include <nlohmann/json.hpp>
 #include <iostream>
+
+class twinService;
 
 class twinCallback : public mqtt::callback {
     twinService& twin;

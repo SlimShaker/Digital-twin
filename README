@@ -1,3 +1,69 @@
-work: 192.168.1.153
-hussein@emob: 192.168.1.103
-fog2: 192.168.1.222s
+#PIs IPs
+ssh hussein@192.168.1.103
+
+ssh work@192.168.1.153
+ssh hussein3@192.168.1.183
+
+ssh hussein@192.168.1.187
+ssh fog2@192.168.1.222 -- MASTER
+
+docker swarm join --token SWMTKN-1-3malf5la42291ktjv6ujiooq69brk9kuzqabx2lb4qgv71i3dg-6ae4fc16jrxyb9lz1qqr8gcln 192.168.1.222:2377
+
+#starta cloud broker med config filen
+docker run -d --name cloud_broker -p 1883:1883 -v C:\Users\zhass\Desktop\Kurser\exjobb\project\cloud\mosquitto.conf:/mosquitto/config/mosquitto.conf eclipse-mosquitto
+
+#check registry
+curl http://192.168.1.217:5000/v2/_catalog
+
+#base-image för alla arkitekturer
+docker buildx build --platform linux/arm/v7,linux/arm/v8 -f Dockerfile.base -t 192.168.1.217:5000/project-base --push --provenance=false .
+
+#arm/v7 = Ehome, Emob
+docker buildx build --platform linux/arm/v7 -f edge/Dockerfile -t 192.168.1.217:5000/edge_home:v7 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v7 -f edge/Dockerfile -t 192.168.1.217:5000/edge_mobile:v7 --push --provenance=false --no-cache .
+
+#arm/v8 = Ework, fog1, fog2
+docker buildx build --platform linux/arm/v8 -f edge/Dockerfile -t 192.168.1.217:5000/edge_work:v7 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v8 -f fog/Dockerfile -t 192.168.1.217:5000/fog1:v2 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v8 -f fog/Dockerfile -t 192.168.1.217:5000/fog2:v2 --push --provenance=false --no-cache .
+docker buildx build --platform linux/arm/v8 -f twin/Dockerfile -t 192.168.1.217:5000/twin:v8 --push --provenance=false --no-cache .
+
+docker service create --name edge_home --constraint 'node.hostname==Ehome' -e BROKER=tcp://192.168.1.217:1883 -e EDGE_TYPE=home 192.168.1.217:5000/edge_home
+
+docker service create --name edge_work --constraint 'node.hostname==Ework' -e BROKER=tcp://192.168.1.217:1883 -e EDGE_TYPE=work 192.168.1.217:5000/edge_work
+
+docker service create --name edge_mobile --constraint 'node.hostname==Emob' -e BROKER=tcp://192.168.1.217:1883 -e EDGE_TYPE=mobile 192.168.1.217:5000/edge_mobile
+
+docker service create --name fog1_service --constraint 'node.hostname==fog1' -e BROKER=tcp://192.168.1.217:1883 -e FOG_NODE=smart_router 192.168.1.217:5000/fog1
+
+docker service create --name fog2_service --constraint 'node.hostname==fog2' -e BROKER=tcp://192.168.1.217:1883 -e FOG_NODE=local_server 192.168.1.217:5000/fog2
+
+docker service create --name twin --constraint 'node.hostname==Emob' -e BROKER=tcp://192.168.1.217:1883 192.168.1.217:5000/twin
+
+
+
+#PAUSA appar
+docker service scale edge_home=0 edge_mobile=0 edge_work=0 fog1_service=0 fog2_service=0 twin=0
+#Starta
+docker service scale edge_home=1 edge_mobile=1 edge_work=1 fog1_service=1 fog2_service=1 twin=1
+#update
+docker service update --image 192.168.1.217:5000/edge_home:v7 edge_home
+docker service update --image 192.168.1.217:5000/edge_work:v7 edge_work
+docker service update --image 192.168.1.217:5000/edge_mobile:v7 edge_mobile
+docker service update --image 192.168.1.217:5000/fog1:v2 fog1_service
+docker service update --image 192.168.1.217:5000/fog2:v2 fog2_service
+docker service update --image 192.168.1.217:5000/twin:v8 twin
+#radera
+docker rmi 192.168.1.217:5000/edge_home
+docker rmi 192.168.1.217:5000/edge_mobile
+
+
+#Brokers måste starta med allow_anonymous
+#SR
+docker run -d --name smart_router_broker -p 1883:1883 -v ~/mosquitto/config:/mosquitto/config eclipse-mosquitto
+
+#LS
+docker run -d --name local_server_broker -p 1883:1883 -v ~/mosquitto/config:/mosquitto/config eclipse-mosquitto
+
+#RENSA IMAGES
+docker image prune -af

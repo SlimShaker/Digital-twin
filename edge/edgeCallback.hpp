@@ -5,12 +5,14 @@
 #include <functional>
 
 class edgeCallback : public mqtt::callback {
-    std::function<void(const std::string&)> onRoute;
     std::string myEdgeType;
+    std::function<void(bool)> onActive;
 public:
-    edgeCallback(const std::string& myEdgeType) : myEdgeType(myEdgeType) {}
-    void setRouteHandler(std::function<void(const std::string&)> handler) {
-        onRoute=handler;
-    }
     void message_arrived(mqtt::const_message_ptr msg) override;
+
+    edgeCallback(const std::string& type) : myEdgeType(type) {}
+
+    void setActiveHandler(std::function<void(bool)> handler) {
+        onActive = handler;
+    }
 };

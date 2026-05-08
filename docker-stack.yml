@@ -1,119 +1,75 @@
-version: "3.8"
+version: "3.9
 services:
-  cloud:
-    image: project-cloud:latest
-    environment:
-      - BROKER=tcp://cloud_broker:1883
-    networks:
-      - iot_net
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-
-  twin:
-    image: project-twin:latest
-    environment:
-      - BROKER=tcp://cloud_broker:1883
-    networks:
-      - iot_net
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-
-  fog_home:
-    image: project-fog:latest
-    environment:
-      - BROKER=tcp://smart_router_broker:1883
-      - FOG_NODE=home
-    networks:
-      - iot_net
-    deploy:
-      placement:
-        constraints:
-          - node.labels.fog == home
-
-  fog_work:
-    image: project-fog:latest
-    environment:
-      - BROKER=tcp://local_server_broker:1883
-      - FOG_NODE=work
-    networks:
-      - iot_net
-    deploy:
-      placement:
-        constraints:
-          - node.labels.fog == work
 
   edge_home:
-    image: project-edge:latest
-    environment:
-      - EDGE_TYPE=home
-      - TOPIC=human/home
-      - HAS_FOG=true
-    networks:
-      - iot_net
+    image: edge
     deploy:
       placement:
         constraints:
           - node.labels.edge == home
-
-  edge_work:
-    image: project-edge:latest
     environment:
-      - EDGE_TYPE=work
-      - TOPIC=human/work
-      - HAS_FOG=true
+      - BROKER=tcp://192.168.1.217:1883
+      - EDGE_TYPE=home
     networks:
       - iot_net
+
+  edge_work:
+    image: edge
     deploy:
       placement:
         constraints:
           - node.labels.edge == work
-
-  edge_mobile:
-    image: project-edge:latest
     environment:
-      - EDGE_TYPE=mobile
-      - TOPIC=cloud/data
-      - HAS_FOG=false
+      - BROKER=tcp://192.168.1.217:1883
+      - EDGE_TYPE=work
     networks:
       - iot_net
+
+  edge_mobile:
+    image: edge
     deploy:
       placement:
         constraints:
           - node.labels.edge == mobile
-
-  smart_router_broker:
-    image: eclipse-mosquitto:latest
-    ports:
-      - "1884:1883"
-    volumes:
-      - ./mosquitto/fog.conf:/mosquitto/config/mosquitto.conf
+    environment:
+      - BROKER=tcp://192.168.1.217:1883
+      - EDGE_TYPE=mobile
     networks:
       - iot_net
 
-  local_server_broker:
-    image: eclipse-mosquitto:2
-    ports:
-      - "1885:1883"
-    volumes:
-      - ./mosquitto/fog.conf:/mosquitto/config/mosquitto.conf
+  fog1:
+    image: fog
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == fog1
+    environment:
+      - BROKER=tcp://192.168.1.217:1883
+      - FOG_NODE=fog1
     networks:
       - iot_net
 
-  cloud_broker:
-    image: eclipse-mosquitto:2
-    ports:
-      - "1886:1883"
-    volumes:
-      - ./mosquitto/cloud.conf:/mosquitto/config/mosquitto.conf
+  fog2:
+    image: fog
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == fog2
+    environment:
+      - BROKER=tcp://192.168.1.217:1883
+      - FOG_NODE=fog2
     networks:
       - iot_net
+
+  twin:
+    image: twin
+    deploy:
+      replicas: 1
+    environment:
+      - BROKER=tcp://192.168.1.217:1883
+    networks:
+      - iot_net
+
 networks:
   iot_net:
     driver: overlay
-    attachable: true

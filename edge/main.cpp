@@ -2,19 +2,16 @@
 #include "edge.hpp"
 int main() {
     const char* type_env = std::getenv("EDGE_TYPE");
-    const char* topic_env = std::getenv("TOPIC");
-
-    std::string type = type_env ? type_env : "unknown";
-    std::string topic = topic_env ? topic_env : "human/#";
+    std::string type=type_env ? type_env : "unknown";
     std::string broker;
-    if (type == config::MOBILE_EDGE_TYPE)
-        broker = config::CLOUD_BROKER;
-    else if (type == config::WORK_EDGE_TYPE)
-        broker = config::FOG2_BROKER;
+    if (type==config::HOME_EDGE_TYPE)
+        broker=config::FOG1_BROKER;
+    else if (type==config::WORK_EDGE_TYPE)
+        broker=config::FOG2_BROKER;
     else
-        broker = config::FOG1_BROKER;
+        broker = config::CLOUD_BROKER;
     std::cout << "EDGE STARTED: " << type << " -> " << broker << "\n";
-    edgeNode edge(broker, type, topic);
+    edgeNode edge(broker, type, "");
     edge.start();
     return 0;
 }

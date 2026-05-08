@@ -5,23 +5,20 @@
 #include <string>
 #include <iostream>
 #include <thread>
-#include "twinCallback.hpp"
-#include "../common/config.hpp"
 #include <unordered_map>
 #include <fstream>
+#include "twinCallback.hpp"
+#include "../common/config.hpp"
 
 
 class twinService {
     mqtt::async_client client;
-    std::string nodeRole;
+    std::string device;
     twinCallback cb;
-    std::unordered_map<std::string, std::string> routingTable;
-    std::string defaultRoute="cloud";
-
+    int currentPhase{0};
 public:
-    twinService(const std::string& broker, const std::string& role);
+    twinService(const std::string& broker, const std::string& device);
     void start();
-    void handleMessage(const nlohmann::json& j);
-    std::string resolveRoute(const std::string& edge);
-    void loadRoutingConfig(const std::string& file);
+    void switchPhase(int phase);
+    void broadcastActive(const std::string& activeEdge);
 };

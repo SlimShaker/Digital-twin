@@ -3,9 +3,9 @@
 #include <string>
 namespace config {
     //Brokers
-    const std::string CLOUD_BROKER="tcp://cloud_broker:1883";
-    const std::string FOG1_BROKER="tcp://smart_router_broker:1883";
-    const std::string FOG2_BROKER="tcp://local_server_broker:1883";
+    const std::string CLOUD_BROKER="tcp://192.168.1.217:1883";
+    const std::string FOG1_BROKER="tcp://192.168.1.187:1883";
+    const std::string FOG2_BROKER="tcp://192.168.1.222:1883";
 
     //types
     const std::string HOME_EDGE_TYPE   = "home";
