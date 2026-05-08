@@ -70,15 +70,6 @@ docker run -d --name local_server_broker -p 1883:1883 -v ~/mosquitto/config:/mos
 #RENSA IMAGES
 docker image prune -af
 
-#uppdatera twin script
-docker service update \
-  --constraint-rm 'node.hostname==Ehome' \
-  --constraint-rm 'node.hostname==Emob' \
-  --constraint-rm 'node.hostname==Ework' \
-  --constraint-add 'node.hostname==Ehome' \
-  --env-rm NODE_ROLE \
-  --env-add 'NODE_ROLE=home' \
-  twin
 
 #kopiera
 docker cp cloud:/app/data/latency.csv C:\Users\zhass\Desktop\Kurser\exjobb\project\data\
