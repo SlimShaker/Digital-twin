@@ -20,7 +20,6 @@ std::string reporter::getTimestampWithMs() {
     << '.' << std::setfill('0') << std::setw(3) << nowMs.count();
     return nowSs.str();
 }
-//fix round trip timer
 long long reporter::getEpochMs() {
     auto now = std::chrono::system_clock::now();
     return std::chrono::duration_cast<std::chrono::milliseconds>(

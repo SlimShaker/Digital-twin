@@ -11,7 +11,6 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
-#include <mutex>
 #include <random>
 #include "../common/config.hpp"
 #include "../logger/reporter.hpp"
@@ -26,6 +25,7 @@ class edgeNode {
     reporter rep;
     edgeCallback cb;
     std::atomic<bool> active{false};
+
 
 public:
     edgeNode(const std::string& broker, const std::string& type, const std::string& topic);
